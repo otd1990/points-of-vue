@@ -9,6 +9,7 @@ import WeekFormModal from '../components/WeekFormModal.vue'
 import DeleteConfirmModal from '../components/DeleteConfirmModal.vue'
 import type { Task, Week } from '../types'
 import NewPlannerCardBody from '@/components/NewPlannerCardBody.vue'
+import { weeks } from '@/composables/useWeek'
 
 // Router setup
 const router = useRouter()

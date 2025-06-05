@@ -6,6 +6,7 @@ import { fetchWeeks, getWeekById, weekIsLoading, weeks } from '../composables/us
 import type { Task, Week, TimeEntry } from '../types'
 import { useTimeEntryStore } from '../stores/timeEntryStore'
 import { useTaskStore } from '../stores/taskStore'
+import { weeks } from '@/composables/useWeek'
 
 // Router setup
 const route = useRoute()

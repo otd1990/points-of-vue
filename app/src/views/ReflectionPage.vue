@@ -6,6 +6,7 @@ import { useTimeEntryStore } from '../stores/timeEntryStore'
 import { useTaskStore } from '../stores/taskStore'
 import { fetchWeeks, weeks, weekIsLoading } from '../composables/useWeeks'
 import type { Task, Week, TimeEntry } from '../types'
+import { weeks } from '@/composables/useWeek'
 
 // Use the time entries store
 const timeEntryStore = useTimeEntryStore()
