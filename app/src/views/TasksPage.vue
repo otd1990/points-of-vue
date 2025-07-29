@@ -9,6 +9,7 @@ import { filterTasks, formatTaskStatusLabel } from '@/composables/useTask'
 
 import { useTaskStore } from '@/stores/taskStore'
 import { useTimeEntryStore } from '@/stores/timeEntryStore'
+import { filterTasks } from '@/composables/useTasks'
 
 import type { Task, TaskStatus, TaskArea, TimeEntry, Week } from '@/types'
 import type { RouterLink } from 'vue-router'
