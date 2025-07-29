@@ -7,6 +7,7 @@ import TimeEntryFormModal from '@/components/TimeEntryFormModal.vue'
 
 import { useTaskStore } from '@/stores/taskStore'
 import { useTimeEntryStore } from '@/stores/timeEntryStore'
+import { filterTasks } from '@/composables/useTasks'
 
 import type { Task, TaskStatus, TaskArea, TimeEntry, Week } from '@/types'
 import type { RouterLink } from 'vue-router'
@@ -54,16 +55,6 @@ const fetchWeeks = async () => {
 
 const getWeekById = (weekId: string) => {
   return weeks.value.find((week) => week.id === weekId) || null
-}
-
-// Filter method (using taskStore)
-const filterTasks = (filters: {
-  weekId?: string
-  status?: TaskStatus | 'all'
-  area?: TaskArea | 'all'
-  searchTerm?: string
-}) => {
-  return taskStore.filterTasks(filters)
 }
 
 // Task functions
@@ -183,7 +174,7 @@ const expandedTimeEntries = ref<Set<string>>(new Set())
 
 // Filter tasks using inline method
 const filteredTasks = computed(() => {
-  return filterTasks({
+  return filterTasks(taskStore.tasks, {
     weekId: selectedWeek.value === 'all' ? undefined : selectedWeek.value,
     status: selectedStatus.value as TaskStatus | 'all',
     area: selectedArea.value as TaskArea | 'all',
