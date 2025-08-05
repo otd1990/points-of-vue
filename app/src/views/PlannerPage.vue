@@ -3,6 +3,8 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useTaskStore } from '@/stores/taskStore'
+import { fetchWeeks, weeks, weekIsLoading } from '../composables/useWeeks'
+
 import WeekFormModal from '../components/WeekFormModal.vue'
 import DeleteConfirmModal from '../components/DeleteConfirmModal.vue'
 import type { Task, Week } from '../types'
@@ -16,35 +18,6 @@ const taskStore = useTaskStore()
 
 // API base URL for week operations
 const API_BASE_URL = 'http://localhost:3000'
-
-// Week management logic (simple local state without caching)
-const weeks = ref<Week[]>([])
-const weekIsLoading = ref(false)
-const weekError = ref<string | null>(null)
-
-// Week actions
-const fetchWeeks = async () => {
-  weekIsLoading.value = true
-  weekError.value = null
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/weeks`)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const fetchedWeeks: Week[] = await response.json()
-    weeks.value = fetchedWeeks
-
-    return fetchedWeeks
-  } catch (err) {
-    weekError.value = err instanceof Error ? err.message : 'Failed to fetch weeks'
-    console.error('Error fetching weeks:', err)
-    throw err
-  } finally {
-    weekIsLoading.value = false
-  }
-}
 
 // Modal references
 const weekFormModal = ref()

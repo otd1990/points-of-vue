@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-import type { Task, TaskStatus, TaskFilters } from '../types'
-import filterTasks from '@/composables/useTasks'
+import type { Task, TaskStatus } from '../types'
 
 const API_BASE_URL = 'http://localhost:3000'
 
