@@ -2,9 +2,12 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { Icon } from '@iconify/vue'
 
-import { useTimeEntryStore } from '../stores/timeEntryStore'
-import { useTaskStore } from '../stores/taskStore'
-import type { Task, Week, TimeEntry } from '../types'
+import { useTimeEntryStore } from '../../stores/timeEntryStore'
+import { useTaskStore } from '../../stores/taskStore'
+import { fetchWeeks, weeks, weekIsLoading } from '../../composables/useWeeks'
+import type { Task, Week, TimeEntry } from '../../types'
+
+import { formatDateRange } from '@/utils/datetime'
 
 // Use the time entries store
 const timeEntryStore = useTimeEntryStore()
@@ -13,7 +16,6 @@ const timeEntryStore = useTimeEntryStore()
 const taskStore = useTaskStore()
 
 // API base URL for weeks (keeping week logic local for now)
-const API_BASE_URL = 'http://localhost:3000'
 
 // Use store for task management
 const tasks = computed(() => taskStore.tasks)
@@ -29,39 +31,6 @@ const getTasksByWeek = (weekId: string): Task[] => {
 }
 
 // Week management logic (simple local state without caching)
-const weeks = ref<Week[]>([])
-const weekIsLoading = ref(false)
-const weekError = ref<string | null>(null)
-
-// Computed properties
-const currentWeek = computed(() => {
-  return weeks.value.find((week) => week.isCurrentWeek) || null
-})
-
-// Week actions
-const fetchWeeks = async () => {
-  weekIsLoading.value = true
-  weekError.value = null
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/weeks`)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const fetchedWeeks: Week[] = await response.json()
-    weeks.value = fetchedWeeks
-
-    return fetchedWeeks
-  } catch (err) {
-    weekError.value = err instanceof Error ? err.message : 'Failed to fetch weeks'
-    console.error('Error fetching weeks:', err)
-    throw err
-  } finally {
-    weekIsLoading.value = false
-  }
-}
-
 const getWeekById = (weekId: string) => {
   return weeks.value.find((week) => week.id === weekId) || null
 }
@@ -242,13 +211,6 @@ const formatTime = (minutes: number) => {
   if (hours === 0) return `${mins} min`
   if (mins === 0) return `${hours}h`
   return `${hours}h ${mins}min`
-}
-
-// Format date range
-const formatDateRange = (startDate: string, endDate: string) => {
-  const start = new Date(startDate)
-  const end = new Date(endDate)
-  return `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`
 }
 </script>
 

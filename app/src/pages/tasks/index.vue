@@ -4,6 +4,9 @@ import { Icon } from '@iconify/vue'
 import DeleteConfirmModal from '@/components/DeleteConfirmModal.vue'
 import TaskFormModal from '@/components/TaskFormModal.vue'
 import TimeEntryFormModal from '@/components/TimeEntryFormModal.vue'
+import { fetchWeeks, weeks, weekIsLoading } from '../../composables/useWeeks'
+
+import { filterTasks, formatTaskStatusLabel } from '@/composables/useTask'
 
 import { useTaskStore } from '@/stores/taskStore'
 import { useTimeEntryStore } from '@/stores/timeEntryStore'
@@ -18,54 +21,6 @@ const API_BASE_URL = 'http://localhost:3000'
 const taskStore = useTaskStore()
 const timeEntryStore = useTimeEntryStore()
 
-// Week state
-const weeks = ref<Week[]>([])
-const weekIsLoading = ref(false)
-const weekError = ref<string | null>(null)
-
-// Week getters
-const currentWeek = computed(() => {
-  return weeks.value.find((week) => week.isCurrentWeek) || null
-})
-
-// Week actions
-const fetchWeeks = async () => {
-  weekIsLoading.value = true
-  weekError.value = null
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/weeks`)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const fetchedWeeks: Week[] = await response.json()
-    weeks.value = fetchedWeeks
-
-    return fetchedWeeks
-  } catch (err) {
-    weekError.value = err instanceof Error ? err.message : 'Failed to fetch weeks'
-    console.error('Error fetching weeks:', err)
-    throw err
-  } finally {
-    weekIsLoading.value = false
-  }
-}
-
-const getWeekById = (weekId: string) => {
-  return weeks.value.find((week) => week.id === weekId) || null
-}
-
-// Filter method (using taskStore)
-const filterTasks = (filters: {
-  weekId?: string
-  status?: TaskStatus | 'all'
-  area?: TaskArea | 'all'
-  searchTerm?: string
-}) => {
-  return taskStore.filterTasks(filters)
-}
-
 // Task functions
 const getStatusBadge = (status: string) => {
   switch (status) {
@@ -78,10 +33,6 @@ const getStatusBadge = (status: string) => {
     default:
       return 'badge-neutral'
   }
-}
-
-const formatStatus = (status: string) => {
-  return status.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())
 }
 
 const formatTime = (minutes: number) => {
@@ -183,7 +134,7 @@ const expandedTimeEntries = ref<Set<string>>(new Set())
 
 // Filter tasks using inline method
 const filteredTasks = computed(() => {
-  return filterTasks({
+  return filterTasks(taskStore.tasks, {
     weekId: selectedWeek.value === 'all' ? undefined : selectedWeek.value,
     status: selectedStatus.value as TaskStatus | 'all',
     area: selectedArea.value as TaskArea | 'all',
@@ -390,7 +341,7 @@ const toggleTimeEntries = (taskId: string) => {
               {{ task.title }}
             </RouterLink>
             <div :class="['badge', getStatusBadge(task.status)]">
-              {{ formatStatus(task.status) }}
+              {{ formatTaskStatusLabel(task.status) }}
             </div>
           </div>
 

@@ -5,8 +5,11 @@ import { Icon } from '@iconify/vue'
 import { useTaskStore } from '@/stores/taskStore'
 import BaseModal from './BaseModal.vue'
 
-import type { Task, TaskStatus, TaskArea, Week } from '../types'
+import type { Task, TaskStatus, TaskArea } from '../types'
+import { fetchWeeks, weeks } from '../composables/useWeeks'
+
 import { onMounted } from 'vue'
+import BaseTextarea from './BaseTextarea.vue'
 
 interface TaskFormData {
   title: string
@@ -67,44 +70,6 @@ const updateTask = async (taskId: string, updates: Partial<Omit<Task, 'id' | 'cr
   } finally {
     isLoading.value = false
   }
-}
-
-// Week management logic (simple local state without caching)
-const weeks = ref<Week[]>([])
-const weekIsLoading = ref(false)
-const weekError = ref<string | null>(null)
-
-// Computed properties
-const currentWeek = computed(() => {
-  return weeks.value.find((week) => week.isCurrentWeek) || null
-})
-
-// Week actions
-const fetchWeeks = async () => {
-  weekIsLoading.value = true
-  weekError.value = null
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/weeks`)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const fetchedWeeks: Week[] = await response.json()
-    weeks.value = fetchedWeeks
-
-    return fetchedWeeks
-  } catch (err) {
-    weekError.value = err instanceof Error ? err.message : 'Failed to fetch weeks'
-    console.error('Error fetching weeks:', err)
-    throw err
-  } finally {
-    weekIsLoading.value = false
-  }
-}
-
-const getWeekById = (weekId: string) => {
-  return weeks.value.find((week) => week.id === weekId) || null
 }
 
 // Form data
@@ -274,19 +239,13 @@ onMounted(async () => {
       </div>
 
       <!-- Description -->
-      <div class="form-control">
-        <label class="label" for="task-description">
-          <span class="label-text font-medium">Description</span>
-        </label>
-        <textarea
-          id="task-description"
-          v-model="taskForm.description"
-          class="textarea textarea-bordered w-full"
-          rows="3"
-          placeholder="Describe your task..."
-          :disabled="isLoading"
-        ></textarea>
-      </div>
+      <BaseTextarea
+        id="task-description"
+        label="Description"
+        v-model="taskForm.description"
+        placeholder="Describe your task..."
+        :disabled="isLoading"
+      />
 
       <!-- Week Selection -->
       <div class="form-control">

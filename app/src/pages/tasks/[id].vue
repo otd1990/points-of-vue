@@ -3,6 +3,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useTaskStore } from '@/stores/taskStore'
+import { fetchWeeks, getWeekById, weekIsLoading } from '../composables/useWeeks'
 import { useTimeEntryStore } from '@/stores/timeEntryStore'
 import DeleteConfirmModal from '@/components/DeleteConfirmModal.vue'
 import TimeEntryFormModal from '@/components/TimeEntryFormModal.vue'
@@ -37,39 +38,6 @@ const fetchTasks = () => taskStore.fetchTasks()
 const getTaskById = (taskId: string) => taskStore.getTaskById(taskId)
 const updateTaskStatus = (taskId: string, status: TaskStatus) =>
   taskStore.updateTaskStatus(taskId, status)
-
-// Week management logic (simple local state without caching)
-const weeks = ref<Week[]>([])
-const weekIsLoading = ref(false)
-const weekError = ref<string | null>(null)
-
-// Week actions
-const fetchWeeks = async () => {
-  weekIsLoading.value = true
-  weekError.value = null
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/weeks`)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const fetchedWeeks: Week[] = await response.json()
-    weeks.value = fetchedWeeks
-
-    return fetchedWeeks
-  } catch (err) {
-    weekError.value = err instanceof Error ? err.message : 'Failed to fetch weeks'
-    console.error('Error fetching weeks:', err)
-    throw err
-  } finally {
-    weekIsLoading.value = false
-  }
-}
-
-const getWeekById = (weekId: string) => {
-  return weeks.value.find((week) => week.id === weekId) || null
-}
 
 // Get the current task from route
 const taskId = computed(() => route.params.id as string)

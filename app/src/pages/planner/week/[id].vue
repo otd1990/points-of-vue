@@ -2,9 +2,11 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
-import type { Task, Week, TimeEntry } from '../types'
-import { useTimeEntryStore } from '../stores/timeEntryStore'
-import { useTaskStore } from '../stores/taskStore'
+import { fetchWeeks, getWeekById, weekIsLoading, weeks } from '../../../composables/useWeeks'
+import type { Task, Week, TimeEntry } from '../../../types'
+import { useTimeEntryStore } from '../../../stores/timeEntryStore'
+import { useTaskStore } from '../../../stores/taskStore'
+import { formatDateRange } from '@/utils/datetime'
 
 // Router setup
 const route = useRoute()
@@ -16,39 +18,6 @@ const taskStore = useTaskStore()
 
 // API base URL for week operations
 const API_BASE_URL = 'http://localhost:3000'
-
-// Week management logic
-const weeks = ref<Week[]>([])
-const weekIsLoading = ref(false)
-const weekError = ref<string | null>(null)
-
-// Week actions
-const fetchWeeks = async () => {
-  weekIsLoading.value = true
-  weekError.value = null
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/weeks`)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const fetchedWeeks: Week[] = await response.json()
-    weeks.value = fetchedWeeks
-
-    return fetchedWeeks
-  } catch (err) {
-    weekError.value = err instanceof Error ? err.message : 'Failed to fetch weeks'
-    console.error('Error fetching weeks:', err)
-    throw err
-  } finally {
-    weekIsLoading.value = false
-  }
-}
-
-const getWeekById = (weekId: string) => {
-  return weeks.value.find((week) => week.id === weekId) || null
-}
 
 // Task management logic (duplicated from tasks.vue)
 // Use store for task management
@@ -244,12 +213,6 @@ const formatTime = (minutes: number) => {
   if (hours === 0) return `${mins} min`
   if (mins === 0) return `${hours}h`
   return `${hours}h ${mins}min`
-}
-
-const formatDateRange = (startDate: string, endDate: string) => {
-  const start = new Date(startDate)
-  const end = new Date(endDate)
-  return `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`
 }
 
 const formatDate = (dateStr: string) => {
