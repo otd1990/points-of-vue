@@ -2,11 +2,10 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { Icon } from '@iconify/vue'
 
-import { useTimeEntryStore } from '../stores/timeEntryStore'
-import { useTaskStore } from '../stores/taskStore'
-import { fetchWeeks, weeks, weekIsLoading } from '../composables/useWeeks'
-import type { Task, Week, TimeEntry } from '../types'
-import { weeks } from '@/composables/useWeek'
+import { useTimeEntryStore } from '../../stores/timeEntryStore'
+import { useTaskStore } from '../../stores/taskStore'
+import { fetchWeeks, weeks, weekIsLoading } from '../../composables/useWeeks'
+import type { Task, Week, TimeEntry } from '../../types'
 
 import { formatDateRange } from '@/utils/datetime'
 

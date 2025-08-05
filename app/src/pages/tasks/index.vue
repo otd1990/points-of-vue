@@ -4,7 +4,7 @@ import { Icon } from '@iconify/vue'
 import DeleteConfirmModal from '@/components/DeleteConfirmModal.vue'
 import TaskFormModal from '@/components/TaskFormModal.vue'
 import TimeEntryFormModal from '@/components/TimeEntryFormModal.vue'
-import { fetchWeeks, weeks, weekIsLoading } from '../composables/useWeeks'
+import { fetchWeeks, weeks, weekIsLoading } from '../../composables/useWeeks'
 
 import { filterTasks, formatTaskStatusLabel } from '@/composables/useTask'
 

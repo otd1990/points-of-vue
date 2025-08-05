@@ -3,13 +3,12 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useTaskStore } from '@/stores/taskStore'
-import { fetchWeeks, weeks, weekIsLoading } from '../composables/useWeeks'
+import { fetchWeeks, weeks, weekIsLoading } from '../../composables/useWeeks'
 
-import WeekFormModal from '../components/WeekFormModal.vue'
-import DeleteConfirmModal from '../components/DeleteConfirmModal.vue'
-import type { Task, Week } from '../types'
+import WeekFormModal from '../../components/WeekFormModal.vue'
+import DeleteConfirmModal from '../../components/DeleteConfirmModal.vue'
+import type { Task, Week } from '../../types'
 import NewPlannerCardBody from '@/components/NewPlannerCardBody.vue'
-import { weeks } from '@/composables/useWeek'
 import { formatDateRange } from '@/utils/datetime'
 
 // Router setup
